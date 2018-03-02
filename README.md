@@ -10,5 +10,3 @@
     ```
 
     The specific combinations of distributions and versions that are supported by this role are specified in `.travis.yml`.
-
-
