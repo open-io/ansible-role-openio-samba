@@ -2,10 +2,15 @@
 > **Remove this part after a clone**
 
 ```sh
-git clone https://github.com/open-io/ansible-role-openio-skeleton ansible-role-openio-ROLENAME
-cd ansible-role-openio-ROLENAME
+git clone git@github.com:open-io/ansible-role-openio-skeleton.git ROLENAME
+cd ROLENAME
 grep -r -E '\b[A-Z]+\b' --exclude=LICENSE *
+git remote -v
 git remote set-url origin git@github.com:open-io/ansible-role-openio-ROLENAME.git
+find $PWD -type f -print0 | xargs -0 sed -i -e 's@ROLENAME@trueName@g'
+vi meta/main.yml # change purpose and tags
+vi README.md 
+git worktree add docker-tests origin/docker-tests
 ```
 
 You have to :
@@ -19,14 +24,7 @@ You have to :
   - Schedule tests with in Travis CI
   - Write functional tests in the branch `docker-tests`
 
-#### PURPOSE
-```sh
-grep -r 'PURPOSE' --exclude=LICENSE *
-```
-#### ROLENAME
-```sh
-find $PWD -type f -print0 | xargs -0 sed -i -e 's@ROLENAME@gridinit/firewall/whatever@g'
-```
+
 #### `Role Variables` table
 ```sh
 for i in $(grep -E "^openio_" defaults/main.yml |cut -d':' -f1| sort); do echo '|' '`'$i'`'' | `'$(grep $i defaults/main.yml|cut -d: -f2|sed -e "s/^ //")'` | ... |'; done
