@@ -85,7 +85,7 @@ Apache License, Version 2.0
 
 ## Contributors
 
-- [Cedric DELGEHIER](https://github.com/cdelgehier/) (maintainer)
+- [Cedric DELGEHIER](https://github.com/cdelgehier) (maintainer)
 - [Romain ACCIARI](https://github.com/racciari) (maintainer)
 - [Vincent LEGOLL](https://github.com/vincent-legoll) (maintainer)
 - [Sebastien LAPIERRE](https://github.com/sebastienlapierre) (maintainer)
