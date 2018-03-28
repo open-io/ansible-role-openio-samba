@@ -23,17 +23,15 @@ IFS=$'\t\n'   # Split on newlines and tabs (but not on spaces)
 
 readonly container_id="$(mktemp)"
 readonly role_dir='/etc/ansible/roles/role_under_test'
-readonly test_playbook="${role_dir}/docker-tests/test.yml"
+if [ "$#" -ne 1 ]; then
+    readonly test_playbook="${role_dir}/docker-tests/test.yml"
+else
+    readonly test_playbook="${role_dir}/docker-tests/$1.yml"
+fi
+readonly requirements="${role_dir}/docker-tests/requirements.yml"
 
-# geerlingguy
-#readonly docker_image="geerlingguy/docker"
-#readonly image_tag="${docker_image}-${DISTRIBUTION}${VERSION}-ansible"
-# bertvv
 readonly docker_image="bertvv/ansible-testing"
 readonly image_tag="${docker_image}:${DISTRIBUTION}_${VERSION}"
-# williamyeh
-#readonly docker_image="williamyeh/ansible"
-#readonly image_tag="${docker_image}:${DISTRIBUTION}${VERSION}"
 
 # Distribution specific settings
 init="/sbin/init"
@@ -45,6 +43,7 @@ main() {
 
   start_container
 
+  #run_galaxy_install
   run_syntax_check
   run_test_playbook
   run_idempotence_test
@@ -155,6 +154,12 @@ run_test_playbook() {
   log 'Run finished'
 }
 
+run_galaxy_install() {
+  log "Running ansible-galaxy install"
+  exec_container ansible-galaxy install -r "${requirements}"
+  log "Requirements installed"
+}
+
 run_idempotence_test() {
   log 'Running idempotence test' 
   local output
@@ -195,4 +200,3 @@ log() {
 #}}}
 
 main "${@}"
-
