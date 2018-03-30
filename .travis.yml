@@ -29,7 +29,7 @@ before_install:
 
 script:
   # Lint
-  - ansible-lint .
+  - ansible-lint . -x ANSIBLE0016
   - yamllint .
 
   # Create container and apply test playbook
@@ -38,4 +38,4 @@ script:
   # Run functional tests on the container
   - SUT_ID=$(docker ps -qa) ./docker-tests/functional-tests.sh
   #- SUT_IP=172.17.0.2 ./docker-tests/functional-tests.sh
-
+...
