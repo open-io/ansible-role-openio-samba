@@ -5,9 +5,10 @@
 git clone git@github.com:open-io/ansible-role-openio-skeleton.git ROLENAME
 cd ROLENAME
 grep -r -E '\b[A-Z]+\b' --exclude=LICENSE *
+find $PWD -type f -print0 | xargs -0 sed -i -e 's@ROLENAME@trueName@g'
 git remote -v
 git remote set-url origin git@github.com:open-io/ansible-role-openio-ROLENAME.git
-find $PWD -type f -print0 | xargs -0 sed -i -e 's@ROLENAME@trueName@g'
+
 vi meta/main.yml # change purpose and tags
 vi README.md 
 git worktree add docker-tests origin/docker-tests
@@ -31,8 +32,8 @@ for i in $(grep -E "^openio_" defaults/main.yml |cut -d':' -f1| sort); do echo '
 ```
 
 -----REMOVE--THE---8<-----PREVIOUS---PART------
-
 __
+
 [![Build Status](https://travis-ci.org/open-io/ansible-role-openio-ROLENAME.svg?branch=master)](https://travis-ci.org/open-io/ansible-role-openio-ROLENAME)
 # Ansible role `ROLENAME`
 

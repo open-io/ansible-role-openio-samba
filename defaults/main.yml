@@ -1,5 +1,5 @@
 # roles/ROLENAME/defaults/main.yml
 ---
-openio_sds_release: 17.04
-openio_ROLENAME_repo_managed: false
+openio_ROLENAME_namespace: "OPENIO"
+openio_ROLENAME_serviceid: "0"
 ...

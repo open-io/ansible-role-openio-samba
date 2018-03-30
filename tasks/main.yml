@@ -28,10 +28,19 @@
     - "{{ ansible_os_family }}.yml"
   tags: install
 
-- name: Ensure service is started
-  service:
-    name: "{{ ROLENAME_service }}"
-    state: started
-    enabled: true
+- name: Generate configuration files
+  template:
+    src: ROLENAME.conf.j2
+    dest: "/etc/oio/sds/{{ openio_ROLENAME_namespace }}/..."
+    owner: openio
+    group: openio
+    mode: 0644
+  tags: install
+  register: _ROLENAME_conf
+
+
+- name: restart ROLENAME
+  command: "gridinit_cmd restart  {{openio_ROLENAME_namespace}}-ROLENAME-{{openio_ROLENAME_serviceid}}"
+  when: _ROLENAME_conf.changed
   tags: configure
 ...

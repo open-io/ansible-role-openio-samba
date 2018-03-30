@@ -2,7 +2,5 @@
 # Distribution-specific variables for Ubuntu, Debian, ...
 ---
 ROLENAME_packages:
-  - ROLENAME
-
-ROLENAME_service: ROLENAMEd
+  - openio-ROLENAME
 ...
