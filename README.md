@@ -30,12 +30,15 @@ It is **recommended** to:
 
 > Use the following instructions to setup your testing environment
 > (make sure virtualenv2 is installed)
-> ```sh
+>
+```sh
 virtualenv2 env && source env/bin/activate
 pip install yamllint ansible-lint
 # Run tests run before each commit
+export HOOK=".git/hooks/prepare-commit-msg"
+if [ ! -f "$HOOK" ] ; then echo "#\!/bin/sh" > "$HOOK" && chmod +x "$HOOK"; fi
 cat << \EOF >> .git/hooks/prepare-commit-msg
-cmds=("ansible-lint ." "yamllint -c .yamllint .")
+cmds=("ansible-lint . -x ANSIBLE0016" "yamllint -c .yamllint .")
 for cmd in "${cmds[@]}"; do
   echo "Running ${cmd%% *}"
   cmd_out="$($cmd)"
