@@ -1,4 +1,6 @@
 ---
+ignore:
+  env/**/*
 rules:
   braces:
     level: error

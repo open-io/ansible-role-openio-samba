@@ -10,11 +10,11 @@ git remote -v
 git remote set-url origin git@github.com:open-io/ansible-role-openio-ROLENAME.git
 
 vi meta/main.yml # change purpose and tags
-vi README.md 
+vi README.md
 git worktree add docker-tests origin/docker-tests
 ```
 
-You have to :
+It is **required** to:
   - Change the author
   - Choose one or many maintainers
   - Change the purpose
@@ -22,9 +22,31 @@ You have to :
   - Inform the responsibilities of this role (README)
   - Feed the `Role Variables` table (README)
   - Add one or more examples of playbook (README)
-  - Schedule tests with in Travis CI
+  - Activate tests in Travis CI
   - Write functional tests in the branch `docker-tests`
 
+It is **recommended** to:
+  - Setup tests on your local machine (see below)
+
+> Use the following instructions to setup your testing environment
+> (make sure virtualenv2 is installed)
+> ```sh
+virtualenv2 env && source env/bin/activate
+pip install yamllint ansible-lint
+# Run tests run before each commit
+cat << \EOF >> .git/hooks/prepare-commit-msg
+cmds=("ansible-lint ." "yamllint -c .yamllint .")
+for cmd in "${cmds[@]}"; do
+  echo "Running ${cmd%% *}"
+  cmd_out="$($cmd)"
+  echo -n "${cmd_out}"
+  if [ "$cmd_out" ]; then
+      echo -e "\nRejecting commit: ${cmd%% *} returned errors"
+      exit 1
+  fi
+done
+EOF
+```
 
 #### `Role Variables` table
 ```sh
