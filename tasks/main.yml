@@ -28,6 +28,12 @@
     - "{{ ansible_os_family }}.yml"
   tags: install
 
+- name: Ensures conf directory exists
+  file:
+    dest: "/etc/gridinit.d/{{ openio_ROLENAME_namespace }}"
+    state: directory
+  tags: install
+
 - name: Generate configuration files
   template:
     src: ROLENAME.conf.j2
@@ -38,9 +44,25 @@
   tags: install
   register: _ROLENAME_conf
 
+- name: Generate configuration files
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    owner: openio
+    group: openio
+    mode: 0644
+  with_items:
+    - src: "ROLENAME.conf.j2"
+      dest: "{{ openio_ROLENAME_sysconfig_dir }}/\
+        ROLENAME-{{ openio_ROLENAME_serviceid }}/ROLENAME-{{ openio_ROLENAME_serviceid }}.conf"
+    - src: "gridinit_ROLENAME.conf.j2"
+      dest: "{{ openio_ROLENAME_gridinit_dir }}/ROLENAME-{{ openio_ROLENAME_serviceid }}.conf"
+  register: _ROLENAME_conf
 
 - name: restart ROLENAME
-  command: "gridinit_cmd restart  {{openio_ROLENAME_namespace}}-ROLENAME-{{openio_ROLENAME_serviceid}}"
+  shell: |
+    gridinit_cmd reload
+    gridinit_cmd restart  {{openio_ROLENAME_namespace}}-ROLENAME-{{openio_ROLENAME_serviceid}}
   when: _ROLENAME_conf.changed
   tags: configure
 ...
