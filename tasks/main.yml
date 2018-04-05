@@ -46,7 +46,7 @@
 - name: Generate configuration files
   template:
     src: ROLENAME.conf.j2
-    dest: "/etc/oio/sds/{{ openio_ROLENAME_namespace }}/..."
+    dest: "{{ openio_meta1_sysconfig_dir }}"
     owner: openio
     group: openio
     mode: 0644
