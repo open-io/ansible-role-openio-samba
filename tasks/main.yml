@@ -28,6 +28,15 @@
     - "{{ ansible_os_family }}.yml"
   tags: install
 
+- name: Ensure directory exists
+  file:
+    path: "{{ openio_ROLENAME_sysconfig_dir }}/ROLENAME-{{ openio_ROLENAME_serviceid }}"      
+    state: directory
+    owner: openio
+    group: openio
+    mode: 0755
+  tags: install
+
 - name: Ensures conf directory exists
   file:
     dest: "/etc/gridinit.d/{{ openio_ROLENAME_namespace }}"
