@@ -1,7 +1,9 @@
 ---
 - name: Install packages
   package:
-    name: "{{ item }}"
+    name: "{{ pkg }}"
     state: installed
   with_items: "{{ ROLENAME_packages }}"
+  loop_control:
+    loop_var: pkg
 ...
