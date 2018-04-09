@@ -30,17 +30,16 @@
 
 - name: Ensure directory exists
   file:
-    path: "{{ openio_ROLENAME_sysconfig_dir }}/ROLENAME-{{ openio_ROLENAME_serviceid }}"
+    path: "{{ item }}"
     state: directory
     owner: openio
     group: openio
     mode: 0755
-  tags: install
-
-- name: Ensures conf directory exists
-  file:
-    dest: "/etc/gridinit.d/{{ openio_ROLENAME_namespace }}"
-    state: directory
+    recurse: true
+  with_items:
+    - "/etc/gridinit.d/{{ openio_ROLENAME_namespace }}"
+    - "{{ openio_ROLENAME_sysconfig_dir }}/ROLENAME-{{ openio_ROLENAME_serviceid }}"
+    - "/var/log/oio/sds/{{ openio_ROLENAME_namespace }}/ROLENAME-{{ openio_ROLENAME_serviceid }}"
   tags: install
 
 - name: Generate configuration files
