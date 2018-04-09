@@ -30,7 +30,7 @@
 
 - name: Ensure directory exists
   file:
-    path: "{{ openio_ROLENAME_sysconfig_dir }}/ROLENAME-{{ openio_ROLENAME_serviceid }}"      
+    path: "{{ openio_ROLENAME_sysconfig_dir }}/ROLENAME-{{ openio_ROLENAME_serviceid }}"
     state: directory
     owner: openio
     group: openio
@@ -46,7 +46,7 @@
 - name: Generate configuration files
   template:
     src: ROLENAME.conf.j2
-    dest: "{{ openio_meta1_sysconfig_dir }}"
+    dest: "{{ openio_ROLENAME_sysconfig_dir }}"
     owner: openio
     group: openio
     mode: 0644
