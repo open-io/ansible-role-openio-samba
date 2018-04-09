@@ -28,29 +28,26 @@
     - "{{ ansible_os_family }}.yml"
   tags: install
 
-- name: Ensure directory exists
-  file:
+- name: Test directories presence
+  stat:
     path: "{{ item }}"
+  register: _dir
+  with_items:
+    - "/etc/gridinit.d/{{ openio_ROLENAME_namespace }}"
+    - "{{ openio_ROLENAME_sysconfig_dir }}/ROLENAME-{{ openio_ROLENAME_serviceid }}"
+    - "/var/log/oio/sds/{{ openio_ROLENAME_namespace }}/ROLENAME-{{ openio_ROLENAME_serviceid }}"
+
+- name: Ensure directories exists
+  file:
+    path: "{{ item.item }}"
     state: directory
     owner: openio
     group: openio
     mode: 0755
     recurse: true
-  with_items:
-    - "/etc/gridinit.d/{{ openio_ROLENAME_namespace }}"
-    - "{{ openio_ROLENAME_sysconfig_dir }}/ROLENAME-{{ openio_ROLENAME_serviceid }}"
-    - "/var/log/oio/sds/{{ openio_ROLENAME_namespace }}/ROLENAME-{{ openio_ROLENAME_serviceid }}"
+  with_items: "{{ _dir.results }}"
+  when: not item.stat.exists
   tags: install
-
-- name: Generate configuration files
-  template:
-    src: ROLENAME.conf.j2
-    dest: "{{ openio_ROLENAME_sysconfig_dir }}"
-    owner: openio
-    group: openio
-    mode: 0644
-  tags: install
-  register: _ROLENAME_conf
 
 - name: Generate configuration files
   template:
