@@ -10,4 +10,11 @@
     ```
 4. You can test another use case by adding an argument to the script. An argument `<another>` will apply a playbook `<another.yml>`
 
+5. You can run functionnal tests locally like that:
+
+    ```
+    SUT_ID=9acda29c356b ./docker-tests/functional-tests.sh
+    SUT_IP=172.17.0.2   ./docker-tests/functional-tests.sh
+    ```
+   
 The specific combinations of distributions and versions that are supported by this role are specified in `.travis.yml`.
