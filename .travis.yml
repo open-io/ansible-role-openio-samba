@@ -3,16 +3,15 @@
 sudo: required
 
 env:
+  global:
+    - ANSIBLE_VERSION=2.5
   matrix:
     - DISTRIBUTION: centos
       VERSION: 7
-      ANSIBLE_VERSION: 2.5
     - DISTRIBUTION: ubuntu
       VERSION: 16.04
-      ANSIBLE_VERSION: 2.5
 #    - DISTRIBUTION: debian
 #      VERSION: 9
-#      ANSIBLE_VERSION: 2.5
 
 services:
   - docker
