@@ -30,8 +30,10 @@ else
 fi
 readonly requirements="${role_dir}/docker-tests/requirements.yml"
 
-readonly docker_image="bertvv/ansible-testing"
-readonly image_tag="${docker_image}:${DISTRIBUTION}_${VERSION}"
+#readonly docker_image="bertvv/ansible-testing"
+#readonly image_tag="${docker_image}:${DISTRIBUTION}_${VERSION}"
+readonly docker_image="cdelgehier/docker_images_ansible"
+readonly image_tag="${docker_image}:${ANSIBLE_VERSION}_${DISTRIBUTION}_${VERSION}"
 
 # Distribution specific settings
 init="/sbin/init"
@@ -43,7 +45,7 @@ main() {
 
   start_container
 
-  #run_galaxy_install
+  run_galaxy_install
   run_syntax_check
   run_test_playbook
   run_idempotence_test
@@ -64,21 +66,11 @@ main() {
 configure_environment() {
 
   case "${DISTRIBUTION}_${VERSION}" in
-    'centos_6')
-      run_opts+=('--volume=/sys/fs/cgroup:/sys/fs/cgroup:ro')
-      ;;
     'centos_7'|'fedora_25')
       init=/usr/lib/systemd/systemd
       run_opts+=('--volume=/sys/fs/cgroup:/sys/fs/cgroup:ro')
       ;;
-    'ubuntu_14.04')
-      #run_opts+=('--volume=/sys/fs/cgroup:/sys/fs/cgroup:ro')
-      # Workaround for issue when the host operating system has SELinux
-      if [ -x '/usr/sbin/getenforce' ]; then
-        run_opts+=('--volume=/sys/fs/selinux:/sys/fs/selinux:ro')
-      fi
-      ;;
-    'ubuntu_16.04'|'debian_8')
+    'ubuntu_16.04'|'debian_9')
       run_opts=('--volume=/run' '--volume=/run/lock' '--volume=/tmp' '--volume=/sys/fs/cgroup:/sys/fs/cgroup:ro' '--cap-add=SYS_ADMIN' '--cap-add=SYS_RESOURCE')
 
       #if [ -x '/usr/sbin/getenforce' ]; then
