@@ -35,7 +35,7 @@
   with_items:
     - "/etc/gridinit.d/{{ openio_ROLENAME_namespace }}"
     - "{{ openio_ROLENAME_sysconfig_dir }}/ROLENAME-{{ openio_ROLENAME_serviceid }}"
-    - "/var/log/oio/sds/{{ openio_ROLENAME_namespace }}/ROLENAME-{{ openio_ROLENAME_serviceid }}"
+    - "/var/lib/oio/sds/{{ openio_ROLENAME_namespace }}/ROLENAME-{{ openio_ROLENAME_serviceid }}"
 
 - name: Ensure directories exists
   file:
