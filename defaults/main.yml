@@ -2,4 +2,10 @@
 ---
 openio_ROLENAME_namespace: "OPENIO"
 openio_ROLENAME_serviceid: "0"
+
+#openio_ROLENAME_bind_interface: "{{ ansible_default_ipv4.alias }}"
+#openio_ROLENAME_bind_address:
+#  "{{ hostvars[inventory_hostname]['ansible_' + openio_ROLENAME_bind_interface]['ipv4']['address'] }}"
+
+#openio_ROLENAME_volume: "/var/lib/oio/sds/{{ openio_ROLENAME_namespace }}/ROLENAME-{{ openio_ROLENAME_serviceid }}"
 ...
