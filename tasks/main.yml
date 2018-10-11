@@ -62,13 +62,16 @@
       dest: "{{ openio_ROLENAME_sysconfig_dir }}/\
         ROLENAME-{{ openio_ROLENAME_serviceid }}/ROLENAME-{{ openio_ROLENAME_serviceid }}.conf"
     - src: "gridinit_ROLENAME.conf.j2"
-      dest: "{{ openio_ROLENAME_gridinit_dir }}/ROLENAME-{{ openio_ROLENAME_serviceid }}.conf"
+      dest: "{{ openio_ROLENAME_gridinit_dir }}/{{ openio_ROLENAME_gridinit_file_prefix }}\
+        ROLENAME-{{ openio_ROLENAME_serviceid }}.conf"
   register: _ROLENAME_conf
 
 - name: restart ROLENAME
   shell: |
     gridinit_cmd reload
     gridinit_cmd restart  {{openio_ROLENAME_namespace}}-ROLENAME-{{openio_ROLENAME_serviceid}}
-  when: _ROLENAME_conf.changed
+  when: 
+    - _ROLENAME_conf.changed
+    - not openio_ROLENAME_provision_only
   tags: configure
 ...
