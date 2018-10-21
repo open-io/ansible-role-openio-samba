@@ -3,4 +3,5 @@
 ---
 ROLENAME_packages:
   - openio-ROLENAME
+syslog_user: openio
 ...
