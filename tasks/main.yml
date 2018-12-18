@@ -7,20 +7,6 @@
     - "{{ ansible_os_family }}.yml"
   tags: install
 
-- name: Create the 'openio' group
-  group:
-    name: openio
-    gid: "{{ openio_group_openio_gid | default('220')}}"
-  tags: install
-
-- name: Create the 'openio' user
-  user:
-    name: openio
-    comment: "openio account"
-    uid: "{{ openio_user_openio_uid | default('120')}}"
-    group: openio
-  tags: install
-
 - name: "Include {{ ansible_distribution }} tasks"
   include_tasks: "{{ item }}"
   with_first_found:
@@ -28,35 +14,21 @@
     - "{{ ansible_os_family }}.yml"
   tags: install
 
-- name: Test directories presence
-  stat:
-    path: "{{ item }}"
-  register: _dir
-  with_items:
-    - "/etc/gridinit.d/{{ openio_ROLENAME_namespace }}"
-    - "{{ openio_ROLENAME_sysconfig_dir }}/ROLENAME-{{ openio_ROLENAME_serviceid }}"
-    #- "{{ openio_ROLENAME_volume }}"
-
 - name: Ensure directories exists
   file:
-    path: "{{ item.item }}"
+    path: "{{ item.path }}"
     state: directory
-    owner: openio
-    group: openio
-    mode: 0755
-    recurse: true
-  with_items: "{{ _dir.results }}"
-  when: not item.stat.exists
-  tags: install
-
-- name: Ensure log directory
-  file:
-    path: "/var/log/oio/sds/{{ openio_ROLENAME_namespace }}/ROLENAME-{{ openio_ROLENAME_serviceid }}"
-    state: directory
-    owner: "{{ syslog_user }}"
-    group: openio
-    mode: 0750
-    recurse: true
+    owner: "{{ item.owner | default('openio') }}"
+    group: "{{ item.group | default('openio') }}"
+    mode: "{{ item.mode | default(0755) }}"
+  with_items:
+    - path: "/etc/gridinit.d/{{ openio_ROLENAME_namespace }}"
+    - path: "{{ openio_ROLENAME_sysconfig_dir }}/{{ openio_ROLENAME_servicename }}"
+    #- path: "{{ openio_ROLENAME_volume }}"
+    #- path: "{{ openio_ROLENAME_pid_directory }}"
+    - path: "/var/log/oio/sds/{{ openio_ROLENAME_namespace }}/{{ openio_ROLENAME_servicename }}"
+      owner: "{{ syslog_user }}"
+      mode: "0750"
   tags: install
 
 - name: Generate configuration files
@@ -69,17 +41,18 @@
   with_items:
     - src: "ROLENAME.conf.j2"
       dest: "{{ openio_ROLENAME_sysconfig_dir }}/\
-        ROLENAME-{{ openio_ROLENAME_serviceid }}/ROLENAME-{{ openio_ROLENAME_serviceid }}.conf"
+        {{ openio_ROLENAME_servicename }}/{{ openio_ROLENAME_servicename }}.conf"
     - src: "gridinit_ROLENAME.conf.j2"
       dest: "{{ openio_ROLENAME_gridinit_dir }}/{{ openio_ROLENAME_gridinit_file_prefix }}\
-        ROLENAME-{{ openio_ROLENAME_serviceid }}.conf"
+        {{ openio_ROLENAME_servicename }}.conf"
   register: _ROLENAME_conf
+  tags: configure
 
 - name: restart ROLENAME
   shell: |
     gridinit_cmd reload
-    gridinit_cmd restart  {{openio_ROLENAME_namespace}}-ROLENAME-{{openio_ROLENAME_serviceid}}
-  when: 
+    gridinit_cmd restart  {{openio_ROLENAME_namespace}}-{{openio_ROLENAME_servicename}}
+  when:
     - _ROLENAME_conf.changed
     - not openio_ROLENAME_provision_only
   tags: configure

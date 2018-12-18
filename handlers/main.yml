@@ -1,8 +1,0 @@
-# roles/ROLENAME/handlers/main.yml
----
-#- name: restart ROLENAME
-#  service:
-#    name: "{{ ROLENAME_service }}"
-#    state: restarted
-#
-...

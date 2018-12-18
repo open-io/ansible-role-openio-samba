@@ -85,10 +85,20 @@ No dependencies.
 
 ```yaml
 - hosts: all
-  gather_facts: true
   become: true
+  vars:
+    NS: OPENIO
+
   roles:
-    - role: ROLENAME
+    - role: repo
+      openio_repository_products:
+        sds:
+          release: "18.10"
+    - role: users
+    - role: gridinit
+      openio_gridinit_namespace: "{{ NS }}"
+    - role: role_under_test
+      openio_ROLENAME_namespace: "{{ NS }}"
 ```
 
 
@@ -114,5 +124,3 @@ GNU AFFERO GENERAL PUBLIC LICENSE, Version 3
 - [Cedric DELGEHIER](https://github.com/cdelgehier) (maintainer)
 - [Romain ACCIARI](https://github.com/racciari) (maintainer)
 - [Vincent LEGOLL](https://github.com/vincent-legoll) (maintainer)
-- [Sebastien LAPIERRE](https://github.com/sebastienlapierre) (maintainer)
-- [Geoffrey TIEN](https://github.com/GeoffreyTien) (maintainer)
