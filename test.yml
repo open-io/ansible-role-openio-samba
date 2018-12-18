@@ -1,8 +1,19 @@
-# Test playbook
 ---
-
 - hosts: all
   become: true
+  vars:
+    NS: TRAVIS
+
   roles:
+    - role: repo
+      openio_repository_no_log: false
+      openio_repository_products:
+        sds:
+          release: "18.10"
+    - role: users
+    - role: gridinit
+      openio_gridinit_namespace: "{{ NS }}"
+      openio_gridinit_per_ns: true
     - role: role_under_test
+      openio_ROLENAME_namespace: "{{ NS }}"
 ...

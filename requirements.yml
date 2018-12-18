@@ -1,4 +1,8 @@
 ---
+- src: https://github.com/open-io/ansible-role-openio-users.git
+  version: master
+  name: users
+
 - src: https://github.com/open-io/ansible-role-openio-gridinit.git
   version: master
   name: gridinit
