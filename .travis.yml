@@ -41,7 +41,7 @@ before_install:
 
 script:
   # Lint
-  - ansible-lint . -x ANSIBLE0016
+  #- ansible-lint . -x ANSIBLE0016
   - yamllint .
 
   # Create container and apply test playbook
