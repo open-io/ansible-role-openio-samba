@@ -1,8 +1,2 @@
 ---
-openio_ROLENAME_sysconfig_dir: "/etc/oio/sds/{{ openio_ROLENAME_namespace }}"
-openio_ROLENAME_servicename: "ROLENAME-{{ openio_ROLENAME_serviceid }}"
-
-openio_ROLENAME_definition_file: >
-  "{{ openio_ROLENAME_sysconfig_dir }}/
-  {{ openio_ROLENAME_servicename }}/{{ openio_ROLENAME_servicename }}.conf"
 ...

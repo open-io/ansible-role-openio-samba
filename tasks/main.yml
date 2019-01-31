@@ -1,4 +1,4 @@
-# roles/ROLENAME/tasks/main.yml
+# roles/samba/tasks/main.yml
 ---
 - name: "Include {{ ansible_distribution }} variables"
   include_vars: "{{ item }}"
@@ -14,46 +14,77 @@
     - "{{ ansible_os_family }}.yml"
   tags: install
 
-- name: Ensure directories exists
-  file:
-    path: "{{ item.path }}"
-    state: directory
-    owner: "{{ item.owner | default('openio') }}"
-    group: "{{ item.group | default('openio') }}"
-    mode: "{{ item.mode | default(0755) }}"
-  with_items:
-    - path: "/etc/gridinit.d/{{ openio_ROLENAME_namespace }}"
-    - path: "{{ openio_ROLENAME_sysconfig_dir }}/{{ openio_ROLENAME_servicename }}"
-    #- path: "{{ openio_ROLENAME_volume }}"
-    #- path: "{{ openio_ROLENAME_pid_directory }}"
-    - path: "/var/log/oio/sds/{{ openio_ROLENAME_namespace }}/{{ openio_ROLENAME_servicename }}"
-      owner: "{{ syslog_user }}"
-      mode: "0750"
-  tags: install
+- name: Check running CTDB
+  command: 'pidof ctdbd'
+  changed_when: false
+  failed_when: false
+  register: _ctdb_running
+  when: openio_samba_ctdb
 
-- name: Generate configuration files
+- block:
+    - name: CTDB - Ensure lock directory exists
+      file:
+        path: "{{ openio_samba_ctdb_recovery_lock | dirname }}"
+        state: directory
+        mode: 0755
+
+    - name: CTDB - Configuration
+      template:
+        src: "{{ item.src }}"
+        dest: "{{ item.dest }}"
+        mode: 0644
+        owner: root
+        group: root
+      with_items:
+        - { src: 'ctdb.conf.j2', dest: '/etc/ctdb/ctdbd.conf' }
+        - { src: 'ctdb.nodes.j2', dest: '{{ ctdb_nodes }}' }
+        - { src: 'public_addresses.j2', dest: '{{ ctdb_public_addresses }}' }
+  when:
+    - openio_samba_ctdb
+
+- block:
+    - name: CTDB - service
+      service:
+        name: "{{ item }}"
+        state: "{{ openio_samba_ctdb_service_state }}"
+        enabled: "{{ openio_samba_ctdb_service_enabled }}"
+      with_items: "{{ ctdb_services }}"
+
+    - name: CTDB - Ensure lock directory exists
+      file:
+        path: "{{ openio_samba_ctdb_recovery_lock | dirname }}"
+        state: directory
+        mode: 0755
+  when:
+    - openio_samba_ctdb
+    - _ctdb_running.rc is defined
+    - _ctdb_running.rc != 0
+
+- name: Check running SAMBA
+  command: "pidof {{ samba_service_name }}"
+  changed_when: false
+  failed_when: false
+  register: _samba_running
+
+- name: SAMBA - Configuration
   template:
     src: "{{ item.src }}"
     dest: "{{ item.dest }}"
-    owner: openio
-    group: openio
     mode: 0644
+    owner: root
+    group: root
   with_items:
-    - src: "ROLENAME.conf.j2"
-      dest: "{{ openio_ROLENAME_sysconfig_dir }}/\
-        {{ openio_ROLENAME_servicename }}/{{ openio_ROLENAME_servicename }}.conf"
-    - src: "gridinit_ROLENAME.conf.j2"
-      dest: "{{ openio_ROLENAME_gridinit_dir }}/{{ openio_ROLENAME_gridinit_file_prefix }}\
-        {{ openio_ROLENAME_servicename }}.conf"
-  register: _ROLENAME_conf
-  tags: configure
+    - { src: 'smb.conf.j2', dest: '/etc/samba/smb.conf' }
 
-- name: restart ROLENAME
-  shell: |
-    gridinit_cmd reload
-    gridinit_cmd restart  {{openio_ROLENAME_namespace}}-{{openio_ROLENAME_servicename}}
+- name: SAMBA - service
+  service:
+    name: "{{ item }}"
+    state: "{{ openio_samba_service_state }}"
+    enabled: "{{ openio_samba_service_enabled }}"
+  with_items: "{{ samba_services }}"
   when:
-    - _ROLENAME_conf.changed
-    - not openio_ROLENAME_provision_only
-  tags: configure
+    - _samba_running.rc is defined
+    - _samba_running.rc != 0
+
+
 ...

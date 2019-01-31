@@ -1,0 +1,33 @@
+
+# Options to ctdbd, read by ctdbd_wrapper(1)
+#
+# See ctdbd.conf(5) for more information about CTDB configuration variables.
+
+# Shared recovery lock file to avoid split brain.  No default.
+#
+# Do NOT run CTDB without a recovery lock file unless you know exactly
+# what you are doing.
+CTDB_RECOVERY_LOCK={{ openio_samba_ctdb_recovery_lock }}
+
+# List of nodes in the cluster.  Default is below.
+CTDB_NODES={{ ctdb_nodes }}
+
+# List of public addresses for providing NAS services.  No default.
+CTDB_PUBLIC_ADDRESSES={{ ctdb_public_addresses }}
+
+# What services should CTDB manage?  Default is none.
+CTDB_MANAGES_SAMBA={{ openio_samba_ctdb_manages_samba }}
+CTDB_MANAGES_WINBIND={{ openio_samba_ctdb_manages_winbind }}
+CTDB_MANAGES_NFS={{ openio_samba_ctdb_manages_nfs }}
+
+# Raise the file descriptor limit for CTDB?
+# CTDB_MAX_OPEN_FILES=10000
+
+# Default is to use the log file below instead of syslog.
+# CTDB_LOGGING=file:/var/log/log.ctdb
+
+# Default log level is NOTICE.  Want less logging?
+# CTDB_DEBUGLEVEL=ERR
+
+# Set some CTDB tunable variables during CTDB startup?
+# CTDB_SET_TDBMutexEnabled=0

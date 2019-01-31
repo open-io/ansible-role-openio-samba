@@ -1,70 +1,7 @@
+[![Build Status](https://travis-ci.org/open-io/ansible-role-openio-samba.svg?branch=master)](https://travis-ci.org/open-io/ansible-role-openio-samba)
+# Ansible role `samba`
 
-> **Remove this part after a clone**
-
-```sh
-git clone git@github.com:open-io/ansible-role-openio-skeleton.git ROLENAME
-cd ROLENAME
-grep -r -E '\b[A-Z]+\b' --exclude=LICENSE *
-find $PWD -type f -print0 | xargs -0 sed -i -e 's@ROLENAME@trueName@g'
-git remote -v
-git remote set-url origin git@github.com:open-io/ansible-role-openio-ROLENAME.git
-
-vi meta/main.yml # change purpose and tags
-vi README.md
-git worktree add docker-tests origin/docker-tests
-```
-
-It is **required** to:
-  - Change the author
-  - Choose one or many maintainers
-  - Change the purpose
-  - Change the rolename
-  - Inform the responsibilities of this role (README)
-  - Feed the `Role Variables` table (README)
-  - Add one or more examples of playbook (README)
-  - Activate tests in Travis CI
-  - Write functional tests in the branch `docker-tests`
-
-It is **recommended** to:
-  - Setup tests on your local machine (see below)
-
-> Use the following instructions to setup your testing environment
-> (make sure virtualenv2 is installed)
->
-```sh
-virtualenv2 env && source env/bin/activate
-pip install yamllint ansible-lint
-# Run tests run before each commit
-export HOOK=".git/hooks/prepare-commit-msg"
-if [ ! -f "$HOOK" ] ; then echo "#\!/bin/sh" > "$HOOK" && chmod +x "$HOOK"; fi
-cat << \EOF >> .git/hooks/prepare-commit-msg
-cmds=("ansible-lint . -x ANSIBLE0016" "yamllint -c .yamllint .")
-for cmd in "${cmds[@]}"; do
-  echo "Running ${cmd%% *}"
-  cmd_out="$($cmd)"
-  echo -n "${cmd_out}"
-  if [ "$cmd_out" ]; then
-      echo -e "\nRejecting commit: ${cmd%% *} returned errors"
-      exit 1
-  fi
-done
-EOF
-```
-
-#### `Role Variables` table
-```sh
-for i in $(grep -E "^openio_" defaults/main.yml |cut -d':' -f1| sort); do echo '|' '`'$i'`'' | `'$(grep $i defaults/main.yml|cut -d: -f2|sed -e "s/^ //")'` | ... |'; done
-```
-
------REMOVE--THE---8<-----PREVIOUS---PART------
-__
-
-[![Build Status](https://travis-ci.org/open-io/ansible-role-openio-ROLENAME.svg?branch=master)](https://travis-ci.org/open-io/ansible-role-openio-ROLENAME)
-# Ansible role `ROLENAME`
-
-An Ansible role for PURPOSE. Specifically, the responsibilities of this role are to:
-
--
+An Ansible role for SAMBA and CTDB.
 
 ## Requirements
 
@@ -75,7 +12,17 @@ An Ansible role for PURPOSE. Specifically, the responsibilities of this role are
 
 | Variable   | Default | Comments (type)  |
 | :---       | :---    | :---             |
-| `openio_ROLENAME_...` | `...`   | ...              |
+| `openio_samba_ctdb` | `false` | Enable CTDB |
+| `openio_samba_ctdb_manages_nfs` | `"no"` | CTDB manage NFS |
+| `openio_samba_ctdb_manages_samba` | `"yes"` | CTDB manage SAMBA |
+| `openio_samba_ctdb_manages_winbind` | `"yes"` | CTDB manage WINBIND |
+| `openio_samba_ctdb_nodes_list` | `[]` | CTDB hosts addresses |
+| `openio_samba_ctdb_recovery_lock` | `/some/place/on/shared/storage/ctdb/lock` | CTDB lock directory |
+| `openio_samba_ctdb_service_enabled` | `false` | CTDB service at boot |
+| `openio_samba_ctdb_service_state` | `stopped` | CTDB service state |
+| `openio_samba_mountpoints` | `[]` | List of mounts |
+| `openio_samba_service_enabled` | `false` | SAMBA service at boot |
+| `openio_samba_service_state` | `stopped` | SAMBA service state |
 
 ## Dependencies
 
@@ -86,25 +33,39 @@ No dependencies.
 ```yaml
 - hosts: all
   become: true
-  vars:
-    NS: OPENIO
 
   roles:
-    - role: repo
-      openio_repository_products:
-        sds:
-          release: "18.10"
-    - role: users
-    - role: gridinit
-      openio_gridinit_namespace: "{{ NS }}"
-    - role: role_under_test
-      openio_ROLENAME_namespace: "{{ NS }}"
+    - role: samba
+      openio_samba_service_state: started
+      openio_samba_service_enabled: true
+      openio_samba_ctdb: true
+      openio_samba_ctdb_service_state: stopped
+      openio_samba_ctdb_service_enabled: false
+      openio_samba_ctdb_recovery_lock: /tmp/ctdb/lock
+      openio_samba_ctdb_manages_samba: "yes"
+      openio_samba_ctdb_manages_winbind: "yes"
+      openio_samba_ctdb_manages_nfs: "no"
+      openio_samba_ctdb_nodes_list:
+        - 10.0.0.1
+        - 10.0.0.2
+      openio_samba_mountpoints:
+        - comment: Samba
+          ? "ea support"
+          : "yes"
+          export_name: plop
+          path: /tmp/foo
+          public: "yes"
+          ? "read only"
+          : "no"
+          ? "vfs objects"
+          : "catia fruit streams_xattr"
+          writeable: "yes"
 ```
 
 
 ```ini
 [all]
-node1 ansible_host=192.168.1.173
+node1 ansible_host=10.0.0.1
 ```
 
 ## Contributing
@@ -123,4 +84,3 @@ GNU AFFERO GENERAL PUBLIC LICENSE, Version 3
 
 - [Cedric DELGEHIER](https://github.com/cdelgehier) (maintainer)
 - [Romain ACCIARI](https://github.com/racciari) (maintainer)
-- [Vincent LEGOLL](https://github.com/vincent-legoll) (maintainer)

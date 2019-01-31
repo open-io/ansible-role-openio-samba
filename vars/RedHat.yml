@@ -1,7 +1,24 @@
-# roles/ROLENAME/vars/RedHat.yml
+# roles/samba/vars/RedHat.yml
 # Distribution-specific variables for RHEL, CentOS, ...
 ---
-ROLENAME_packages:
-  - openio-ROLENAME
-syslog_user: openio
+ctdb_packages:
+  - ctdb
+
+samba_packages:
+  - samba
+  - samba-common
+  - samba-winbind-clients
+
+samba_services:
+  - smb
+  - nmb
+  - winbind
+
+ctdb_services:
+  - ctdb
+
+ctdb_nodes: /etc/ctdb/nodes
+ctdb_public_addresses: /etc/ctdb/public_addresses
+
+samba_service_name: smb
 ...

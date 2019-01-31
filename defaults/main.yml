@@ -1,16 +1,15 @@
-# roles/ROLENAME/defaults/main.yml
+# roles/samba/defaults/main.yml
 ---
-openio_ROLENAME_namespace: "OPENIO"
-openio_ROLENAME_serviceid: "0"
+openio_samba_service_state: stopped
+openio_samba_service_enabled: false
 
-openio_ROLENAME_gridinit_dir: "/etc/gridinit.d/{{ openio_ROLENAME_namespace }}"
-openio_ROLENAME_gridinit_file_prefix: ""
-
-#openio_ROLENAME_bind_interface: "{{ ansible_default_ipv4.alias }}"
-#openio_ROLENAME_bind_address:
-#  "{{ hostvars[inventory_hostname]['ansible_' + openio_ROLENAME_bind_interface]['ipv4']['address'] }}"
-
-#openio_ROLENAME_volume: "/var/lib/oio/sds/{{ openio_ROLENAME_namespace }}/{{ openio_ROLENAME_servicename }}"
-openio_ROLENAME_provision_only: false
-openio_ROLENAME_location: "{{ ansible_hostname }}.{{ openio_ROLENAME_serviceid }}"
+openio_samba_ctdb: false
+openio_samba_ctdb_service_state: stopped
+openio_samba_ctdb_service_enabled: false
+openio_samba_ctdb_recovery_lock: /some/place/on/shared/storage/ctdb/lock
+openio_samba_ctdb_manages_samba: "yes"
+openio_samba_ctdb_manages_winbind: "yes"
+openio_samba_ctdb_manages_nfs: "no"
+openio_samba_ctdb_nodes_list: []
+openio_samba_mountpoints: []
 ...
