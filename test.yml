@@ -1,19 +1,41 @@
 ---
 - hosts: all
   become: true
-  vars:
-    NS: TRAVIS
-
   roles:
-    - role: repo
-      openio_repository_no_log: false
-      openio_repository_products:
-        sds:
-          release: "18.10"
-    - role: users
-    - role: gridinit
-      openio_gridinit_namespace: "{{ NS }}"
-      openio_gridinit_per_ns: true
     - role: role_under_test
-      openio_ROLENAME_namespace: "{{ NS }}"
+      openio_samba_service_state: stopped
+      openio_samba_service_enabled: false
+      openio_samba_ctdb: true
+      openio_samba_ctdb_service_state: stopped
+      openio_samba_ctdb_service_enabled: false
+      openio_samba_ctdb_recovery_lock: /some/place/on/shared/storage/ctdb/lock
+      openio_samba_ctdb_manages_samba: "yes"
+      openio_samba_ctdb_manages_winbind: "yes"
+      openio_samba_ctdb_manages_nfs: "no"
+      openio_samba_ctdb_nodes_list:
+        - 127.0.0.1
+        - 127.0.0.2
+      openio_samba_mountpoints:
+        - comment: Samba
+          ? "ea support"
+          : "yes"
+          export_name: foo
+          path: /tmp/foo
+          public: "yes"
+          ? "read only"
+          : "no"
+          ? "vfs objects"
+          : "catia fruit streams_xattr"
+          writeable: "yes"
+        - comment: Samba
+          ? "ea support"
+          : "yes"
+          export_name: bar
+          path: /tmp/bar
+          public: "no"
+          ? "read only"
+          : "yes"
+          ? "vfs objects"
+          : "catia fruit streams_xattr"
+          writeable: "no"
 ...
