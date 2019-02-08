@@ -1,7 +1,8 @@
 # {{ ansible_managed }}
 [global]
   guest ok = yes
-  clustering = yes
+  clustering = {% if openio_samba_ctdb %}yes{% else %}no{% endif %}
+
   netbios name = csmb-server
   log level = 5
   log file = /var/log/samba/log.%m
