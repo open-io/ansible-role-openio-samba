@@ -25,4 +25,18 @@
   retries: 5
   delay: 2
   when: openio_samba_ctdb
+
+- name: Active Directory - packages
+  package:
+    name: "{{ pkg }}"
+    state: present
+  with_items: "{{ ad_packages }}"
+  loop_control:
+    loop_var: pkg
+  ignore_errors: "{{ ansible_check_mode }}"
+  register: install_packages_ad
+  until: install_packages_ad is success
+  retries: 5
+  delay: 2
+  when: openio_samba_active_directory
 ...

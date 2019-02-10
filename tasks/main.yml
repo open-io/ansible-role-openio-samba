@@ -14,6 +14,47 @@
     - "{{ ansible_os_family }}.yml"
   tags: install
 
+- block:
+    - name: Configure kerberos
+      ini_file:
+        path: /etc/krb5.conf
+        section: libdefaults
+        option: "{{ opt.name }}"
+        value: "{{ opt.value }}"
+      loop_control:
+        loop_var: opt
+      register: _krb5_conf
+      with_items:
+        - {'name': 'dns_lookup_kdc', 'value': 'true'}
+        - {'name': 'dns_lookup_realm', 'value': 'false'}
+        - {'name': 'default_realm', 'value': "{{ openio_samba_active_directory.domain_name | upper }}" }
+    
+    - name: Configure resolv.conf
+      template:
+        src: resolv.conf.j2
+        dest: /etc/resolv.conf
+      register: _resolv_conf
+
+    - name: Add entry in /etc/hosts
+      lineinfile:
+        path: /etc/hosts
+        line: "{{ openio_samba_active_directory.samba_address }} \
+          {{ openio_samba_server_name }}.{{ openio_samba_active_directory.domain_name }} \
+          {{ openio_samba_server_name }}"
+
+    - name: Update /etc/nsswitch.conf 
+      lineinfile:
+        path: /etc/nsswitch.conf
+        regexp: "{{ item.regexp }}"
+        line: "{{ item.line }}" 
+      with_items: 
+        - { regexp: '^passwd:.*', line: 'passwd: files winbind' } 
+        - { regexp: '^group:.*', line: 'group: files winbind' } 
+
+
+  when: openio_samba_active_directory
+
+
 - name: Check running CTDB
   command: 'pidof ctdbd'
   changed_when: false
@@ -76,6 +117,12 @@
   with_items:
     - { src: 'smb.conf.j2', dest: '/etc/samba/smb.conf' }
 
+- name: Add node to Active Directory
+  command: "net ads join -U '{{openio_samba_active_directory.admin }}%{{ openio_samba_active_directory.password }}'"
+  run_once: true
+  when: openio_samba_active_directory
+
+
 - name: SAMBA - service
   service:
     name: "{{ item }}"
@@ -85,6 +132,4 @@
   when:
     - _samba_running.rc is defined
     - _samba_running.rc != 0
-
-
 ...
