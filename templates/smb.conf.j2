@@ -12,6 +12,15 @@
   printing = bsd
   printcap name = /dev/null
   disable spoolss = yes
+{% if openio_samba_active_directory %}
+  security = ADS
+  workgroup = {{ openio_samba_active_directory.workgroup }}
+  realm = {{ openio_samba_active_directory.domain_name }}
+  host msdfs = yes
+  idmap config * : backend = tdb
+  idmap config * : range = {{ openio_samba_active_directory.id_range }}
+{% endif %}
+
 
 {% for mount in openio_samba_mountpoints %}
 [{{ mount.export_name }}]

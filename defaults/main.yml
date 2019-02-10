@@ -13,4 +13,13 @@ openio_samba_ctdb_manages_nfs: "no"
 openio_samba_ctdb_nodes_list: []
 openio_samba_mountpoints: []
 openio_samba_server_name: "csmb-server"
+
+openio_samba_active_directory: {}
+  #nameserver_address: 172.31.130.54
+  #domain_name: "test.oio"
+  #workgroup: "TEST-OIO"
+  #admin: "Administrator"
+  #password: "Ojjahdo1!"
+  #samba_address: "172.31.130.29"
+  #id_range: "3000-7999"
 ...
