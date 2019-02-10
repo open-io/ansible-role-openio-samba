@@ -25,10 +25,10 @@
         loop_var: opt
       register: _krb5_conf
       with_items:
-        - {'name': 'dns_lookup_kdc', 'value': 'true'}
-        - {'name': 'dns_lookup_realm', 'value': 'false'}
-        - {'name': 'default_realm', 'value': "{{ openio_samba_active_directory.domain_name | upper }}" }
-    
+        - { 'name': 'dns_lookup_kdc', 'value': 'true' }
+        - { 'name': 'dns_lookup_realm', 'value': 'false' }
+        - { 'name': 'default_realm', 'value': "{{ openio_samba_active_directory.domain_name | upper }}" }
+
     - name: Configure resolv.conf
       template:
         src: resolv.conf.j2
@@ -42,14 +42,14 @@
           {{ openio_samba_server_name }}.{{ openio_samba_active_directory.domain_name }} \
           {{ openio_samba_server_name }}"
 
-    - name: Update /etc/nsswitch.conf 
+    - name: Update /etc/nsswitch.conf
       lineinfile:
         path: /etc/nsswitch.conf
         regexp: "{{ item.regexp }}"
-        line: "{{ item.line }}" 
-      with_items: 
-        - { regexp: '^passwd:.*', line: 'passwd: files winbind' } 
-        - { regexp: '^group:.*', line: 'group: files winbind' } 
+        line: "{{ item.line }}"
+      with_items:
+        - { regexp: '^passwd:.*', line: 'passwd: files winbind' }
+        - { regexp: '^group:.*', line: 'group: files winbind' }
 
 
   when: openio_samba_active_directory
