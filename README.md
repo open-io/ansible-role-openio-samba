@@ -25,6 +25,44 @@ An Ansible role for SAMBA and CTDB.
 | `openio_samba_service_enabled` | `false` | Enable SAMBA service on boot |
 | `openio_samba_service_state` | `stopped` | SAMBA service state |
 
+
+## Active Directory
+### What set in `openio_samba_active_directory` ?
+
+```yaml
+openio_samba_active_directory:
+  nameserver_address: 172.31.130.54
+  domain_name: "test.oio"
+  workgroup: "TEST-OIO"
+  admin: "Administrator"
+  password: "Ojjahdo1!"
+  samba_address: "172.31.130.29"
+  id_range: "3000-7999"
+```
+
+### How to find informations ?
+```console
+C:\Users\openio>Net Config Workstation
+Computer name                        \\WIN2016
+Full Computer name                   win2016.cnci.oio
+User name                            openio
+
+Workstation active on
+        NetBT_Tcpip_{2E871AAA-CCF8-4A79-902F-675ADDE3FD43} (FA163E1A3663)
+        NetBT_Tcpip_{B8A56940-05EC-428F-BA5F-8C447B7BF63D} (FA163EF5FFAE)
+
+Software version                     Windows Server 2016 Standard Evaluation
+
+Workstation domain                   CNCIAD     <- WORKGROUP
+Workstation Domain DNS Name          cnci.oio   <- domain
+Logon domain                         CNCIAD
+
+COM Open Timeout (sec)               0
+COM Send Count (byte)                16
+COM Send Timeout (msec)              250
+The command completed successfully.
+```
+
 ## Dependencies
 
 No dependencies.
