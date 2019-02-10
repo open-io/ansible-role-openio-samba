@@ -21,7 +21,8 @@ An Ansible role for SAMBA and CTDB.
 | `openio_samba_ctdb_service_enabled` | `false` | CTDB service at boot |
 | `openio_samba_ctdb_service_state` | `stopped` | CTDB service state |
 | `openio_samba_mountpoints` | `[]` | List of mounts |
-| `openio_samba_service_enabled` | `false` | SAMBA service at boot |
+| `openio_samba_server_name` | `csmb-server` | SAMBA server name |
+| `openio_samba_service_enabled` | `false` | Enable SAMBA service on boot |
 | `openio_samba_service_state` | `stopped` | SAMBA service state |
 
 ## Dependencies

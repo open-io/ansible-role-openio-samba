@@ -12,4 +12,5 @@ openio_samba_ctdb_manages_winbind: "yes"
 openio_samba_ctdb_manages_nfs: "no"
 openio_samba_ctdb_nodes_list: []
 openio_samba_mountpoints: []
+openio_samba_server_name: "csmb-server"
 ...
