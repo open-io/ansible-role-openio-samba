@@ -109,13 +109,12 @@
 
 - name: SAMBA - Configuration
   template:
-    src: "{{ item.src }}"
-    dest: "{{ item.dest }}"
+    src: smb.conf.j2
+    dest: /etc/samba/smb.conf
     mode: 0644
     owner: root
     group: root
-  with_items:
-    - { src: 'smb.conf.j2', dest: '/etc/samba/smb.conf' }
+    validate: 'testparm -s %s'
 
 - name: Add node to Active Directory
   command: "net ads join -U '{{openio_samba_active_directory.admin }}%{{ openio_samba_active_directory.password }}'"
