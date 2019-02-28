@@ -20,7 +20,7 @@ ctdb_services:
 ctdb_nodes: /etc/ctdb/nodes
 ctdb_public_addresses: /etc/ctdb/public_addresses
 
-samba_service_name: smb
+samba_service_name: smbd
 
 ad_packages:
   - krb5-workstation
