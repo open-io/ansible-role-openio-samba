@@ -5,7 +5,9 @@
   with_first_found:
     - "{{ ansible_distribution }}.yml"
     - "{{ ansible_os_family }}.yml"
-  tags: install
+  tags:
+    - install
+    - configure
 
 - name: "Include {{ ansible_distribution }} tasks"
   include_tasks: "{{ item }}"
@@ -28,12 +30,14 @@
         - { 'name': 'dns_lookup_kdc', 'value': 'true' }
         - { 'name': 'dns_lookup_realm', 'value': 'false' }
         - { 'name': 'default_realm', 'value': "{{ openio_samba_active_directory.domain_name | upper }}" }
+      tags: configure
 
     - name: Configure resolv.conf
       template:
         src: resolv.conf.j2
         dest: /etc/resolv.conf
       register: _resolv_conf
+      tags: configure
 
     - name: Add entry in /etc/hosts
       lineinfile:
@@ -41,6 +45,7 @@
         line: "{{ openio_samba_active_directory.samba_address }} \
           {{ openio_samba_server_name }}.{{ openio_samba_active_directory.domain_name }} \
           {{ openio_samba_server_name }}"
+      tags: configure
 
     - name: Update /etc/nsswitch.conf
       lineinfile:
@@ -50,7 +55,7 @@
       with_items:
         - { regexp: '^passwd:.*', line: 'passwd: files winbind' }
         - { regexp: '^group:.*', line: 'group: files winbind' }
-
+      tags: configure
 
   when: openio_samba_active_directory
 
@@ -61,6 +66,7 @@
   failed_when: false
   register: _ctdb_running
   when: openio_samba_ctdb
+  tags: configure
 
 - block:
     - name: CTDB - Ensure lock directory exists
@@ -68,6 +74,7 @@
         path: "{{ openio_samba_ctdb_recovery_lock | dirname }}"
         state: directory
         mode: 0755
+      tags: configure
 
     - name: CTDB - Configuration
       template:
@@ -80,6 +87,7 @@
         - { src: 'ctdb.conf.j2', dest: '/etc/ctdb/ctdbd.conf' }
         - { src: 'ctdb.nodes.j2', dest: '{{ ctdb_nodes }}' }
         - { src: 'public_addresses.j2', dest: '{{ ctdb_public_addresses }}' }
+      tags: configure
   when:
     - openio_samba_ctdb
 
@@ -90,12 +98,14 @@
         state: "{{ openio_samba_ctdb_service_state }}"
         enabled: "{{ openio_samba_ctdb_service_enabled }}"
       with_items: "{{ ctdb_services }}"
+      tags: configure
 
     - name: CTDB - Ensure lock directory exists
       file:
         path: "{{ openio_samba_ctdb_recovery_lock | dirname }}"
         state: directory
         mode: 0755
+      tags: configure
   when:
     - openio_samba_ctdb
     - _ctdb_running.rc is defined
@@ -106,6 +116,7 @@
   changed_when: false
   failed_when: false
   register: _samba_running
+  tags: configure
 
 - name: SAMBA - Configuration
   template:
@@ -115,12 +126,13 @@
     owner: root
     group: root
     validate: 'testparm -s %s'
+  tags: configure
 
 - name: Add node to Active Directory
   command: "net ads join -U '{{openio_samba_active_directory.admin }}%{{ openio_samba_active_directory.password }}'"
   run_once: true
   when: openio_samba_active_directory
-
+  tags: configure
 
 - name: SAMBA - service
   service:
@@ -128,6 +140,7 @@
     state: "{{ openio_samba_service_state }}"
     enabled: "{{ openio_samba_service_enabled }}"
   with_items: "{{ samba_services }}"
+  tags: configure
   when:
     - _samba_running.rc is defined
     - _samba_running.rc != 0
