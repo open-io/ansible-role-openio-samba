@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/open-io/ansible-role-openio-samba.svg?branch=master)](https://travis-ci.org/open-io/ansible-role-openio-samba)
+[![Build Status](https://travis-ci.org/open-io/ansible-role-openio-samba.svg?branch=20.04)](https://travis-ci.org/open-io/ansible-role-openio-samba)
 # Ansible role `samba`
 
 An Ansible role for SAMBA and CTDB.
