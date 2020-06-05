@@ -1,6 +1,7 @@
 # {{ ansible_managed }}
 [global]
   guest ok = yes
+  guest account = nobody
   clustering = {% if openio_samba_ctdb %}yes{% else %}no{% endif %}
 
   netbios name = {{ openio_samba_server_name }}
