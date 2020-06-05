@@ -15,4 +15,12 @@ openio_samba_mountpoints: []
 openio_samba_server_name: "csmb-server"
 
 openio_samba_active_directory: {}
+openio_samba_kerberos_manage: true
+openio_samba_kerberos_dns_lookup_realm: false
+openio_samba_networknames_manage: true
+openio_samba_host_entry_manage: true
+openio_samba_nsswitch_manage: true
+openio_samba_nsswitch_passwd: "files windbind"
+openio_samba_nsswitch_group: "{{ openio_samba_nsswitch_passwd }}"
+openio_samba_active_directory_join_domain: true
 ...
