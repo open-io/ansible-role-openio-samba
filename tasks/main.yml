@@ -28,8 +28,9 @@
       register: _krb5_conf
       with_items:
         - { 'name': 'dns_lookup_kdc', 'value': 'true' }
-        - { 'name': 'dns_lookup_realm', 'value': 'false' }
-        - { 'name': 'default_realm', 'value': "{{ openio_samba_active_directory.domain_name | upper }}" }
+        - { 'name': 'dns_lookup_realm', 'value': "{{ openio_samba_kerberos_dns_lookup_realm }}" }
+        - { 'name': 'default_realm', 'value': "{{ openio_samba_active_directory.domain_name | lower }}" }
+      when: openio_samba_kerberos_manage
       tags: configure
 
     - name: Configure resolv.conf
@@ -37,6 +38,7 @@
         src: resolv.conf.j2
         dest: /etc/resolv.conf
       register: _resolv_conf
+      when: openio_samba_networknames_manage
       tags: configure
 
     - name: Add entry in /etc/hosts
@@ -45,6 +47,7 @@
         line: "{{ openio_samba_active_directory.samba_address }} \
           {{ openio_samba_server_name }}.{{ openio_samba_active_directory.domain_name }} \
           {{ openio_samba_server_name }}"
+      when: openio_samba_host_entry_manage
       tags: configure
 
     - name: Update /etc/nsswitch.conf
@@ -53,9 +56,10 @@
         regexp: "{{ item.regexp }}"
         line: "{{ item.line }}"
       with_items:
-        - { regexp: '^passwd:.*', line: 'passwd: files winbind' }
-        - { regexp: '^group:.*', line: 'group: files winbind' }
+        - { regexp: '^passwd:.*', line: "passwd: {{ openio_samba_nsswitch_passwd }}" }
+        - { regexp: '^group:.*', line: "group: {{ openio_samba_nsswitch_group }}" }
       tags: configure
+      when: openio_samba_nsswitch_manage
 
   when: openio_samba_active_directory
 
@@ -74,6 +78,18 @@
         path: "{{ openio_samba_ctdb_recovery_lock | dirname }}"
         state: directory
         mode: 0755
+      tags: configure
+
+    - name: CTDB - Ensure directories exists
+      file:
+        path: "{{ item }}"
+        state: directory
+        mode: 0755
+      with_items:
+        - /var/lib/ctdb/volatile
+        - /var/lib/ctdb/persistent
+        - /var/lib/ctdb/state
+        - /etc/ctdb/events/legacy
       tags: configure
 
     - name: CTDB - Configuration
@@ -131,7 +147,9 @@
 - name: Add node to Active Directory
   command: "net ads join -U '{{openio_samba_active_directory.admin }}%{{ openio_samba_active_directory.password }}'"
   run_once: true
-  when: openio_samba_active_directory
+  when: 
+    - openio_samba_active_directory
+    - openio_samba_active_directory_join_domain
   tags: configure
 
 - name: SAMBA - service
